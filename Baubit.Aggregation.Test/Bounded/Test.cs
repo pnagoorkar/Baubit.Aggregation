@@ -11,3 +11,4 @@ namespace Baubit.Aggregation.Test.Bounded
         }
     }
 }
+
