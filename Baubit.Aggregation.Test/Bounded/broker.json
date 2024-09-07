@@ -1,13 +1,6 @@
 {
-  "boundedAggregatorSettings": "~ExecutingAssemblyLocation~\\Bounded\\EventAggregator\\boundedAggregatorSettings.json",
-  "modules": [
-    {
-      "type": "Motif.Autofac.Aggregation.Bounded.Module`1[[Motif.Aggregation.Test.Setup.TestEvent, Motif.Aggregation.Test]], Motif.Autofac.Aggregation",
-      "parameters": {
-        "metaConfiguration": {
-          "JsonUriStrings": [ "file://~ExecutingAssemblyLocation~/Bounded/EventAggregator/boundedAggregatorSettings.json" ]
-        }
-      }
-    }
-  ]
+  "testBrokerFactoryType": "Baubit.xUnit.TestBrokerFactory, Baubit.xUnit",
+  "testBrokerFactoryMetaConfiguration": {
+    "JsonUriStrings": []
+  }
 }
