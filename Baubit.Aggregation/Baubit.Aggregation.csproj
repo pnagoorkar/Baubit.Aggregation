@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Baubit" Version="2024.38.4" />
+    <PackageReference Include="Baubit" Version="2024.40.3" />
   </ItemGroup>
 
 </Project>
