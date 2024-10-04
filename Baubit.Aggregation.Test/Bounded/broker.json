@@ -1,6 +1,14 @@
 {
-  "testBrokerFactoryType": "Baubit.xUnit.TestBrokerFactory, Baubit.xUnit",
-  "testBrokerFactoryConfigurationSource": {
-    "JsonUriStrings": []
-  }
+  "modules": [
+    {
+      "type": "Baubit.Aggregation.Bounded.Module`1[[Baubit.Aggregation.Test.Setup.TestEvent, Baubit.Aggregation.Test]], Baubit.Aggregation",
+      "parameters": {
+        "moduleConfiguration": {
+          "Capacity": 10,
+          "FullMode": 0,
+          "MaxWaitToWriteMS": 10
+        }
+      }
+    }
+  ]
 }
