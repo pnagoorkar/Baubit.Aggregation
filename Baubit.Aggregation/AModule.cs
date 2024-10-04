@@ -33,8 +33,7 @@ namespace Baubit.Aggregation
         {
             services.AddSingleton<DispatcherFactory<TEvent>>(CreateDispatcher);
             services.AddSingleton<IEventAggregator<TEvent>>(serviceProvider => CreateAggregator(channel!, serviceProvider.GetRequiredService<DispatcherFactory<TEvent>>()));
-            services.AddSingleton<ContainerCache>();
-            services.AddSingleton<EventAggregatorFactory<TEvent>>(serviceProvider => serviceProvider.GetRequiredService<ContainerCache>().ServiceProvider.GetRequiredService<IEventAggregator<TEvent>>);
+            services.AddSingleton<IEventPublisher, EventPublisher>();
             base.Load(services);
         }
 
@@ -42,14 +41,5 @@ namespace Baubit.Aggregation
 
         protected abstract TDispatcher CreateDispatcher(IObserver<TEvent> observer, IList<AEventDispatcher<TEvent>> dispatchers);
         protected abstract TAggregator CreateAggregator(Channel<TEvent> channel, DispatcherFactory<TEvent> dispatcherFactory);
-
-        private class ContainerCache
-        {
-            internal IServiceProvider ServiceProvider { get; init; }
-            public ContainerCache(IServiceProvider serviceProvider)
-            {
-                ServiceProvider = serviceProvider;
-            }
-        }
     }
 }

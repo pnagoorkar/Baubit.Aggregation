@@ -21,6 +21,4 @@
         /// <returns>Result of the publish request</returns>
         Task<EventPublishResult> TryPublishAsync(TEvent @event, CancellationToken cancellationToken = default, TimeSpan? maxWaitToWrite = null);
     }
-
-    public delegate IEventAggregator<TEvent> EventAggregatorFactory<TEvent>();
 }

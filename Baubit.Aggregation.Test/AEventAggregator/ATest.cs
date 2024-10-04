@@ -44,10 +44,9 @@ namespace Baubit.Aggregation.Test.AEventAggregator
         }
         [Fact]
         [Order("aa")]
-        public void AggregatorFactoryIsResolved()
+        public void EventPublisherIsResolved()
         {
-            Assert.NotNull(Broker.AggregatorFactory);
-            Assert.NotNull(Broker.AggregatorFactory());
+            Assert.NotNull(Broker.EventPublisher);
         }
 
         [Fact(DisplayName = "Cannot publish event after aggregator disposed"), Order("z")]
