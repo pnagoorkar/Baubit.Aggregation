@@ -7,7 +7,7 @@ namespace Baubit.Aggregation.Test.Bounded
     [JsonConfigurationSource("broker")]
     public class Broker : ABroker
     {
-        public Broker(IEventAggregator<TestEvent> aggregator) : base(aggregator)
+        public Broker(IEventAggregator<TestEvent> aggregator, EventAggregatorFactory<TestEvent> aggregatorFactory) : base(aggregator, aggregatorFactory)
         {
 
         }

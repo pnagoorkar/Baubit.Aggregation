@@ -8,10 +8,12 @@ namespace Baubit.Aggregation.Test.AEventAggregator
         public List<EventConsumer> Consumers { get; set; }
         public List<TestEvent> Events { get; set; }
         public IEventAggregator<TestEvent> Aggregator { get; set; }
+        public EventAggregatorFactory<TestEvent> AggregatorFactory { get; set; }
 
-        protected ABroker(IEventAggregator<TestEvent> aggregator)
+        protected ABroker(IEventAggregator<TestEvent> aggregator, EventAggregatorFactory<TestEvent> aggregatorFactory)
         {
             Aggregator = aggregator;
+            AggregatorFactory = aggregatorFactory;
             Events = new List<Setup.TestEvent>();
             Consumers = new List<Setup.EventConsumer>();
         }

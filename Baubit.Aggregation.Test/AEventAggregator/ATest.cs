@@ -42,6 +42,13 @@ namespace Baubit.Aggregation.Test.AEventAggregator
             }
             Assert.Equal(expectedNumOfReceipts, actualNumOfReceipts);
         }
+        [Fact]
+        [Order("aa")]
+        public void AggregatorFactoryIsResolved()
+        {
+            Assert.NotNull(Broker.AggregatorFactory);
+            Assert.NotNull(Broker.AggregatorFactory());
+        }
 
         [Fact(DisplayName = "Cannot publish event after aggregator disposed"), Order("z")]
         public virtual async Task Test_AggregatorDisposal()
