@@ -33,6 +33,7 @@ namespace Baubit.Aggregation
         {
             services.AddSingleton<DispatcherFactory<TEvent>>(CreateDispatcher);
             services.AddSingleton<IEventAggregator<TEvent>>(serviceProvider => CreateAggregator(channel!, serviceProvider.GetRequiredService<DispatcherFactory<TEvent>>()));
+            services.AddSingleton<EventAggregatorFactory<TEvent>>(serviceProvider => serviceProvider.GetRequiredService<IEventAggregator<TEvent>>);
             base.Load(services);
         }
 
