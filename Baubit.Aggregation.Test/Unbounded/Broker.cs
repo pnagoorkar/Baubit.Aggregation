@@ -1,10 +1,11 @@
-﻿using Baubit.Aggregation.Test.AEventAggregator;
+﻿
+using Baubit.Aggregation.Test.AEventAggregator;
 using Baubit.Aggregation.Test.Setup;
 using Baubit.Configuration;
 
-namespace Baubit.Aggregation.Test.Bounded
+namespace Baubit.Aggregation.Test.Unbounded
 {
-    [EmbeddedJsonSources("Baubit.Aggregation.Test;Bounded.broker.json")]
+    [EmbeddedJsonSources("Baubit.Aggregation.Test;Unbounded.broker.json")]
     public class Broker : ABroker
     {
         public Broker(IEventAggregator<TestEvent> aggregator, IEventPublisher eventPublisher) : base(aggregator, eventPublisher)
