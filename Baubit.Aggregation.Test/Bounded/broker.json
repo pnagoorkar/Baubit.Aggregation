@@ -1,14 +1,21 @@
 {
-  "modules": [
-    {
-      "type": "Baubit.Aggregation.Bounded.Module`1[[Baubit.Aggregation.Test.Setup.TestEvent, Baubit.Aggregation.Test]], Baubit.Aggregation",
-      "parameters": {
-        "moduleConfiguration": {
-          "Capacity": 10,
-          "FullMode": 0,
-          "MaxWaitToWriteMS": 10
+  "type": "Baubit.xUnit.TestBrokerFactory, Baubit.xUnit",
+  "parameters": {
+    "moduleConfiguration": {
+      "modules": [
+        {
+          "type": "Baubit.Aggregation.Bounded.Module`1[[Baubit.Aggregation.Test.Setup.TestEvent, Baubit.Aggregation.Test]], Baubit.Aggregation",
+          "parameters": {
+            "configurationSource": {
+              "embeddedJsonResources": [
+                "Baubit.Aggregation;Bounded.Configurations.Capacity.10.json",
+                "Baubit.Aggregation;Bounded.Configurations.FullMode.Wait.json",
+                "Baubit.Aggregation;Bounded.Configurations.MaxWaitToWrite.10ms.json"
+              ]
+            }
+          }
         }
-      }
+      ]
     }
-  ]
+  }
 }
