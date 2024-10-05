@@ -10,7 +10,7 @@
               "embeddedJsonResources": [
                 "Baubit.Aggregation;Bounded.Configurations.Capacity.10.json",
                 "Baubit.Aggregation;Bounded.Configurations.FullMode.Wait.json",
-                "Baubit.Aggregation;Bounded.Configurations.MaxWaitToWrite.10ms.json"
+                "Baubit.Aggregation;Bounded.Configurations.MaxWaitToWriteMS.10.json"
               ]
             }
           }

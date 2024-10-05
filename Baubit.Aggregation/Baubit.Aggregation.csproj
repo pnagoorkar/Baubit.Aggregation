@@ -15,13 +15,13 @@
   <ItemGroup>
     <None Remove="Bounded\Configurations\Capacity\10.json" />
     <None Remove="Bounded\Configurations\FullMode\Wait.json" />
-    <None Remove="Bounded\Configurations\MaxWaitToWrite\10ms.json" />
+    <None Remove="Bounded\Configurations\MaxWaitToWriteMS\10.json" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Bounded\Configurations\Capacity\10.json" />
     <EmbeddedResource Include="Bounded\Configurations\FullMode\Wait.json" />
-    <EmbeddedResource Include="Bounded\Configurations\MaxWaitToWrite\10ms.json" />
+    <EmbeddedResource Include="Bounded\Configurations\MaxWaitToWriteMS\10.json" />
   </ItemGroup>
 
   <ItemGroup>
