@@ -4,7 +4,7 @@ using Baubit.xUnit;
 
 namespace Baubit.Aggregation.Test.Bounded
 {
-    [JsonConfigurationSource("broker")]
+    [EmbeddedJsonSources("Baubit.Aggregation.Test;Bounded.broker.json")]
     public class Broker : ABroker
     {
         public Broker(IEventAggregator<TestEvent> aggregator, IEventPublisher eventPublisher) : base(aggregator, eventPublisher)
