@@ -4,9 +4,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Channels;
 
-namespace Baubit.Aggregation
+namespace Baubit.Aggregation.DI
 {
-    public abstract class AModule<TConfiguration, TEvent, TAggregator, TDispatcher> : AModule<TConfiguration> where TConfiguration : AModuleConfiguration
+    public abstract class AModule<TConfiguration, TEvent, TAggregator, TDispatcher> : AModule<TConfiguration> where TConfiguration : AConfiguration
                                                                                                               where TAggregator : AEventAggregator<TEvent>
                                                                                                               where TDispatcher : AEventDispatcher<TEvent>
     {

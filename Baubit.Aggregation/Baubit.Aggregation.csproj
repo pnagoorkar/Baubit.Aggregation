@@ -13,19 +13,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Bounded\Configurations\Capacity\10.json" />
-    <None Remove="Bounded\Configurations\FullMode\Wait.json" />
-    <None Remove="Bounded\Configurations\MaxWaitToWriteMS\10.json" />
+    <None Remove="DI\Bounded\Configurations\Capacity\10.json" />
+    <None Remove="DI\Bounded\Configurations\FullMode\Wait.json" />
+    <None Remove="DI\Bounded\Configurations\MaxWaitToWriteMS\10.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Bounded\Configurations\Capacity\10.json" />
-    <EmbeddedResource Include="Bounded\Configurations\FullMode\Wait.json" />
-    <EmbeddedResource Include="Bounded\Configurations\MaxWaitToWriteMS\10.json" />
+    <EmbeddedResource Include="DI\Bounded\Configurations\Capacity\10.json" />
+    <EmbeddedResource Include="DI\Bounded\Configurations\FullMode\Wait.json" />
+    <EmbeddedResource Include="DI\Bounded\Configurations\MaxWaitToWriteMS\10.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Baubit" Version="2024.40.15" />
+    <PackageReference Include="Baubit" Version="2024.40.17" />
   </ItemGroup>
 
 </Project>

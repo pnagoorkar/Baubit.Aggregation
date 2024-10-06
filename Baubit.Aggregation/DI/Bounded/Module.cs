@@ -1,11 +1,12 @@
-﻿using Baubit.Configuration;
+﻿using Baubit.Aggregation.Bounded;
+using Baubit.Configuration;
 using Baubit.DI;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Channels;
 
-namespace Baubit.Aggregation.Bounded
+namespace Baubit.Aggregation.DI.Bounded
 {
-    public sealed class Module<TEvent> : AModule<ModuleConfiguration, TEvent, EventAggregator<TEvent>, EventDispatcher<TEvent>>
+    public sealed class Module<TEvent> : AModule<Configuration, TEvent, EventAggregator<TEvent>, EventDispatcher<TEvent>>
     {
         public Module(ConfigurationSource configurationSource) : base(configurationSource)
         {
@@ -15,14 +16,14 @@ namespace Baubit.Aggregation.Bounded
         {
         }
 
-        public Module(ModuleConfiguration moduleConfiguration, List<AModule> nestedModules) : base(moduleConfiguration, nestedModules)
+        public Module(Configuration moduleConfiguration, List<AModule> nestedModules) : base(moduleConfiguration, nestedModules)
         {
         }
 
         BoundedChannelOptions? boundedChannelOptions;
         protected override void OnInitialized()
         {
-            boundedChannelOptions = new BoundedChannelOptions(ModuleConfiguration.Capacity) { FullMode = ModuleConfiguration.FullMode };
+            boundedChannelOptions = new BoundedChannelOptions(Configuration.Capacity) { FullMode = Configuration.FullMode };
             base.OnInitialized();
         }
 
@@ -39,7 +40,7 @@ namespace Baubit.Aggregation.Bounded
 
         protected override EventAggregator<TEvent> CreateAggregator(Channel<TEvent> channel, DispatcherFactory<TEvent> dispatcherFactory)
         {
-            return new EventAggregator<TEvent>(boundedChannelOptions!, dispatcherFactory, new TimeSpan(ModuleConfiguration.MaxWaitToWriteMS));
+            return new EventAggregator<TEvent>(boundedChannelOptions!, dispatcherFactory, new TimeSpan(Configuration.MaxWaitToWriteMS));
         }
     }
 }

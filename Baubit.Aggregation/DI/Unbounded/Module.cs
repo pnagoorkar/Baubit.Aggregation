@@ -1,11 +1,12 @@
-﻿using Baubit.Configuration;
+﻿using Baubit.Aggregation.Unbounded;
+using Baubit.Configuration;
 using Baubit.DI;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Channels;
 
-namespace Baubit.Aggregation.Unbounded
+namespace Baubit.Aggregation.DI.Unbounded
 {
-    public sealed class Module<TEvent> : AModule<ModuleConfiguration, TEvent, EventAggregator<TEvent>, EventDispatcher<TEvent>>
+    public sealed class Module<TEvent> : AModule<Configuration, TEvent, EventAggregator<TEvent>, EventDispatcher<TEvent>>
     {
         public Module(ConfigurationSource configurationSource) : base(configurationSource)
         {
@@ -15,7 +16,7 @@ namespace Baubit.Aggregation.Unbounded
         {
         }
 
-        public Module(ModuleConfiguration moduleConfiguration, List<AModule> nestedModules) : base(moduleConfiguration, nestedModules)
+        public Module(Configuration moduleConfiguration, List<AModule> nestedModules) : base(moduleConfiguration, nestedModules)
         {
         }
 

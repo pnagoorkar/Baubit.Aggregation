@@ -1,10 +1,10 @@
 {
   "type": "Baubit.xUnit.TestBrokerFactory, Baubit.xUnit",
   "parameters": {
-    "moduleConfiguration": {
+    "configuration": {
       "modules": [
         {
-          "type": "Baubit.Aggregation.Unbounded.Module`1[[Baubit.Aggregation.Test.Setup.TestEvent, Baubit.Aggregation.Test]], Baubit.Aggregation",
+          "type": "Baubit.Aggregation.DI.Unbounded.Module`1[[Baubit.Aggregation.Test.Setup.TestEvent, Baubit.Aggregation.Test]], Baubit.Aggregation",
           "parameters": {
             "configurationSource": {
 

@@ -1,8 +1,8 @@
 ﻿using System.Threading.Channels;
 
-namespace Baubit.Aggregation.Bounded
+namespace Baubit.Aggregation.DI.Bounded
 {
-    public class ModuleConfiguration : AModuleConfiguration
+    public class Configuration : AConfiguration
     {
         public int Capacity { get; set; }
         public BoundedChannelFullMode FullMode { get; set; }
