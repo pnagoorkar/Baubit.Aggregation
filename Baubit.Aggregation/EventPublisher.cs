@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using FluentResults;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Baubit.Aggregation
 {
@@ -9,7 +10,7 @@ namespace Baubit.Aggregation
         {
             this.serviceProvider = serviceProvider;
         }
-        public async Task<EventPublishResult?> TryPublishAsync<TEvent>(TEvent @event)
+        public async Task<Result> TryPublishAsync<TEvent>(TEvent @event)
         {
             return await serviceProvider.GetRequiredService<IEventAggregator<TEvent>>().TryPublishAsync(@event);
         }

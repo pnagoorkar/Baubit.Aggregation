@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Baubit.Aggregation.ResultReasons;
+using FluentResults;
 using System.Threading.Channels;
 
 namespace Baubit.Aggregation
@@ -23,23 +24,30 @@ namespace Baubit.Aggregation
             _dispatcher = Task.Run(DispatchMessages);
         }
 
-        internal async Task<EventDispatchResult> TryPublish(TEvent @event, CancellationToken cancellationToken = default)
+        internal async Task<Result> TryPublish(TEvent @event, CancellationToken cancellationToken = default)
         {
-            if (await _channel.TryWriteWhenReadyAsync(@event, cancellationToken, _instanceCancellationTokenSource.Token))
+            try
             {
-                return EventDispatchResults.Successful;
+                if (await _channel.TryWriteWhenReadyAsync(@event, cancellationToken, _instanceCancellationTokenSource.Token))
+                {
+                    return Result.Ok();
+                }
+                else if (cancellationToken.IsCancellationRequested)
+                {
+                    return Result.Fail("").WithReason(new CancelledByCaller());
+                }
+                else if (_instanceCancellationTokenSource.IsCancellationRequested)
+                {
+                    return Result.Fail("").WithReason(new DispatcherDisposed());
+                }
+                else
+                {
+                    return Result.Fail("");
+                }
             }
-            else if (cancellationToken.IsCancellationRequested)
+            catch (Exception exp)
             {
-                return EventDispatchResults.CancelledByCaller;
-            }
-            else if (_instanceCancellationTokenSource.IsCancellationRequested)
-            {
-                return EventDispatchResults.DispatcherDisposed;
-            }
-            else
-            {
-                return EventDispatchResults.UnexpectedWriteFailure;
+                return Result.Fail(new ExceptionalError(exp));
             }
         }
 

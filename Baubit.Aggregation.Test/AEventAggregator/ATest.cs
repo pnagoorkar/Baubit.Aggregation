@@ -1,4 +1,5 @@
 ﻿using Baubit.xUnit;
+using FluentResults;
 using Xunit.Abstractions;
 
 namespace Baubit.Aggregation.Test.AEventAggregator
@@ -23,15 +24,15 @@ namespace Baubit.Aggregation.Test.AEventAggregator
             Broker.ResetEvents();
             foreach (var @event in Broker.Events)
             {
-                EventPublishResult result = null;
+                Result result = null;
                 do
                 {
                     result = await Broker.Aggregator.TryPublishAsync(@event);
-                    if (result.Success)
+                    if (result.IsSuccess)
                     {
                         @event.PostedAt = DateTime.UtcNow;
                     }
-                } while (!result.Success);
+                } while (!result.IsSuccess);
             }
             var expectedNumOfReceipts = Broker.Consumers.Count * Broker.Events.Count;
             var actualNumOfReceipts = Broker.Events.Sum(@event => @event.Trace.Count);
@@ -55,7 +56,7 @@ namespace Baubit.Aggregation.Test.AEventAggregator
             Broker.ResetEvents();
             Broker.Aggregator.Dispose();
             var result = await Broker.Aggregator.TryPublishAsync(Broker.Events.First());
-            Assert.False(result.Success);
+            Assert.False(result.IsSuccess);
         }
     }
 }

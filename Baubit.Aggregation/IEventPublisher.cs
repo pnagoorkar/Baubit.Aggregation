@@ -1,7 +1,9 @@
-﻿namespace Baubit.Aggregation
+﻿using FluentResults;
+
+namespace Baubit.Aggregation
 {
     public interface IEventPublisher
     {
-        Task<EventPublishResult?> TryPublishAsync<TEvent>(TEvent @event);
+        Task<Result> TryPublishAsync<TEvent>(TEvent @event);
     }
 }

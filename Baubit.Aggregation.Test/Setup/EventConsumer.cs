@@ -13,7 +13,7 @@
         public EventConsumer(IObservable<TestEvent> observable)
         {
             Id = idSeed++;
-            subscription = observable?.Subscribe(this);
+            subscription = observable?.TrySubscribeAsync(this).GetAwaiter().GetResult().Value;
             _taskCompletionSource = new TaskCompletionSource();
             Completion = _taskCompletionSource.Task;
         }

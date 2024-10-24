@@ -1,4 +1,6 @@
-﻿using Baubit.Collections;
+﻿using Baubit.Aggregation.ResultReasons;
+using Baubit.Collections;
+using FluentResults;
 using System.Threading.Channels;
 
 namespace Baubit.Aggregation
@@ -26,34 +28,55 @@ namespace Baubit.Aggregation
             return dispatcher;
         }
 
-        public async virtual Task<EventPublishResult> TryPublishAsync(TEvent @event, 
-                                                                      CancellationToken cancellationToken = default, 
-                                                                      TimeSpan? maxWaitToWrite = null)
+        public async Task<Result<IDisposable>> TrySubscribeAsync(IObserver<TEvent> observer)
         {
-            CancellationTokenSource timedCancellationTokenSource = null;
-            if (maxWaitToWrite != null)
+            await Task.Yield();
+            try
             {
-                timedCancellationTokenSource = new CancellationTokenSource(maxWaitToWrite.Value);
+                if (_instanceCancellationTokenSource.IsCancellationRequested) return null;
+                var dispatcher = _dispatcherFactory.Invoke(observer, _dispatchers);
+                _dispatchers.Add(dispatcher);
+                return Result.Ok<IDisposable>(dispatcher);
             }
-            if (await _channel.TryWriteWhenReadyAsync(@event, cancellationToken, _instanceCancellationTokenSource.Token, timedCancellationTokenSource?.Token ?? default))
+            catch (Exception exp)
             {
-                return EventPublishResults.Successful;
+                return Result.Fail(new ExceptionalError(exp));
             }
-            else if (cancellationToken.IsCancellationRequested)
+        }
+
+        public async virtual Task<Result> TryPublishAsync(TEvent @event, CancellationToken cancellationToken = default, TimeSpan? maxWaitToWrite = null)
+        {
+            try
             {
-                return EventPublishResults.CancelledByCaller;
+                CancellationTokenSource timedCancellationTokenSource = null;
+                if (maxWaitToWrite != null)
+                {
+                    timedCancellationTokenSource = new CancellationTokenSource(maxWaitToWrite.Value);
+                }
+                if (await _channel.TryWriteWhenReadyAsync(@event, cancellationToken, _instanceCancellationTokenSource.Token, timedCancellationTokenSource?.Token ?? default))
+                {
+                    return Result.Ok();
+                }
+                else if (cancellationToken.IsCancellationRequested)
+                {
+                    return Result.Fail("").WithReason(new CancelledByCaller());
+                }
+                else if (_instanceCancellationTokenSource.IsCancellationRequested)
+                {
+                    return Result.Fail("").WithReason(new AggregatorDisposed());
+                }
+                else if (timedCancellationTokenSource != null && timedCancellationTokenSource.IsCancellationRequested)
+                {
+                    return Result.Fail("").WithReason(new WriteTimedOut());
+                }
+                else
+                {
+                    return Result.Fail("");
+                }
             }
-            else if (_instanceCancellationTokenSource.IsCancellationRequested)
+            catch (Exception exp)
             {
-                return EventPublishResults.AggregatorDisposed;
-            }
-            else if (timedCancellationTokenSource != null && timedCancellationTokenSource.IsCancellationRequested)
-            {
-                return EventPublishResults.WriteTimedOut;
-            }
-            else
-            {
-                return EventPublishResults.UnexpectedWriteFailure;
+                return Result.Fail(new ExceptionalError(exp));
             }
         }
 
@@ -63,7 +86,7 @@ namespace Baubit.Aggregation
             {
                 foreach (var dispatcher in _dispatchers)
                 {
-                    EventDispatchResult dispatchResult = await dispatcher.TryPublish(@event, _instanceCancellationTokenSource.Token);
+                    var dispatchResult = await dispatcher.TryPublish(@event, _instanceCancellationTokenSource.Token);
                 }
             }
         }

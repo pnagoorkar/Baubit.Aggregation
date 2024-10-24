@@ -1,4 +1,5 @@
-﻿using System.Threading.Channels;
+﻿using FluentResults;
+using System.Threading.Channels;
 
 namespace Baubit.Aggregation.Bounded
 {
@@ -12,7 +13,7 @@ namespace Baubit.Aggregation.Bounded
         {
             this.maxWaitToWrite = maxWaitToWrite;
         }
-        public override Task<EventPublishResult> TryPublishAsync(TEvent @event, CancellationToken cancellationToken = default, TimeSpan? maxWaitToWrite = null)
+        public override Task<Result> TryPublishAsync(TEvent @event, CancellationToken cancellationToken = default, TimeSpan? maxWaitToWrite = null)
         {
             return base.TryPublishAsync(@event, cancellationToken, maxWaitToWrite ?? this.maxWaitToWrite);
         }

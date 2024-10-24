@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Channels;
 
 namespace Baubit.Aggregation
@@ -14,14 +13,6 @@ namespace Baubit.Aggregation
                 _ = await channel.Reader.ReadAsync();
             }
         }
-        //public static async IAsyncEnumerable<EventDispatchResult> DistributeAsync<TEvent>(this TEvent @event, List<AEventDispatcher<TEvent>> eventDispatchers, [EnumeratorCancellation] CancellationToken cancellationToken)
-        //{
-        //    foreach(var dispatcher in eventDispatchers)
-        //    {
-        //        var result = await dispatcher.TryPublish(@event, cancellationToken);
-        //        yield return result;
-        //    }
-        //}
 
         public static void FlushAndDisposeAsync<TEvent>(this Channel<TEvent> channel)
         {
