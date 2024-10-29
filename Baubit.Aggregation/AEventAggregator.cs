@@ -64,18 +64,21 @@ namespace Baubit.Aggregation
                 }
                 else if (cancellationToken.IsCancellationRequested)
                 {
-                    @event?.CaptureTraceEvent(new DispatchCancelled());
-                    return Result.Fail("").WithReason(new CancelledByCaller());
+                    var cancelledByCaller = new CancelledByCaller();
+                    @event?.CaptureTraceEvent(new DispatchCancelled { Reasons = [cancelledByCaller] });
+                    return Result.Fail("").WithReason(cancelledByCaller);
                 }
                 else if (_instanceCancellationTokenSource.IsCancellationRequested)
                 {
-                    @event?.CaptureTraceEvent(new DispatchCancelled());
-                    return Result.Fail("").WithReason(new AggregatorDisposed());
+                    var aggregatorDisposed = new AggregatorDisposed();
+                    @event?.CaptureTraceEvent(new DispatchCancelled { Reasons = [aggregatorDisposed] });
+                    return Result.Fail("").WithReason(aggregatorDisposed);
                 }
                 else if (timedCancellationTokenSource != null && timedCancellationTokenSource.IsCancellationRequested)
                 {
-                    @event?.CaptureTraceEvent(new DispatchCancelled());
-                    return Result.Fail("").WithReason(new WriteTimedOut());
+                    var writeTimedOut = new WriteTimedOut();
+                    @event?.CaptureTraceEvent(new DispatchCancelled { Reasons = [writeTimedOut] });
+                    return Result.Fail("").WithReason(writeTimedOut);
                 }
                 else
                 {

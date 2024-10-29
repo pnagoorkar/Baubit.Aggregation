@@ -1,4 +1,5 @@
-﻿using Baubit.Aggregation.Traceability;
+﻿using Baubit.Aggregation.ResultReasons;
+using Baubit.Aggregation.Traceability;
 using Baubit.xUnit;
 using FluentResults;
 using Xunit.Abstractions;
@@ -88,12 +89,15 @@ namespace Baubit.Aggregation.Test.AEventAggregator
             var outForDeliveryCount = mergedHistories.Count(evt => evt is OutForDelivery);
             var deliveredCount = mergedHistories.Count(evt => evt is Delivered);
 
+            var dispatchCancelledDueToTimeout = mergedHistories.Count(evt => evt.Reasons.Any(reason => reason is WriteTimedOut));
+
             Assert.Equal(expectedNumOfReceipts, actualNumOfReceipts);
             Assert.Equal(receivedCount - dispatchCancelledCount, Broker.Events.Count);
             Assert.Equal(outForDispatchCount, Broker.Events.Count);
             Assert.Equal(outForDispatchCount, Broker.Events.Count);
             Assert.Equal(outForDeliveryCount, actualNumOfReceipts);
             Assert.Equal(deliveredCount, actualNumOfReceipts);
+            Assert.Equal(dispatchCancelledCount, dispatchCancelledDueToTimeout);
             Parallel.ForEach(Broker.Events, @event => @event.EnableTrace = false);
         }
 
