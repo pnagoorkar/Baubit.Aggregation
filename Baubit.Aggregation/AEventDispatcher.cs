@@ -1,6 +1,9 @@
 ﻿using Baubit.Aggregation.ResultReasons;
 using FluentResults;
 using System.Threading.Channels;
+using Baubit.IO;
+using Baubit.Traceability;
+using Baubit.Aggregation.Traceability;
 
 namespace Baubit.Aggregation
 {
@@ -55,7 +58,9 @@ namespace Baubit.Aggregation
         {
             await foreach (var @event in _channel.EnumerateAsync(_instanceCancellationTokenSource.Token))
             {
+                @event?.CaptureTraceEvent(new OutForDelivery(_observer));
                 _observer.OnNext(@event);
+                @event?.CaptureTraceEvent(new Delivered(_observer));    
             }
         }
 

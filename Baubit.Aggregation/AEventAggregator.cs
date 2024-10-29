@@ -2,6 +2,9 @@
 using Baubit.Collections;
 using FluentResults;
 using System.Threading.Channels;
+using Baubit.IO;
+using Baubit.Traceability;
+using Baubit.Aggregation.Traceability;
 
 namespace Baubit.Aggregation
 {
@@ -13,7 +16,8 @@ namespace Baubit.Aggregation
         protected Task _distributor;
         private readonly DispatcherFactory<TEvent> _dispatcherFactory;
 
-        protected AEventAggregator(Channel<TEvent> channel, DispatcherFactory<TEvent> dispatcherFactory)
+        protected AEventAggregator(Channel<TEvent> channel, 
+                                   DispatcherFactory<TEvent> dispatcherFactory)
         {
             _channel = channel;
             _dispatcherFactory = dispatcherFactory;
@@ -48,6 +52,7 @@ namespace Baubit.Aggregation
         {
             try
             {
+                @event?.CaptureTraceEvent(new Received());
                 CancellationTokenSource timedCancellationTokenSource = null;
                 if (maxWaitToWrite != null)
                 {
@@ -59,14 +64,17 @@ namespace Baubit.Aggregation
                 }
                 else if (cancellationToken.IsCancellationRequested)
                 {
+                    @event?.CaptureTraceEvent(new DispatchCancelled());
                     return Result.Fail("").WithReason(new CancelledByCaller());
                 }
                 else if (_instanceCancellationTokenSource.IsCancellationRequested)
                 {
+                    @event?.CaptureTraceEvent(new DispatchCancelled());
                     return Result.Fail("").WithReason(new AggregatorDisposed());
                 }
                 else if (timedCancellationTokenSource != null && timedCancellationTokenSource.IsCancellationRequested)
                 {
+                    @event?.CaptureTraceEvent(new DispatchCancelled());
                     return Result.Fail("").WithReason(new WriteTimedOut());
                 }
                 else
@@ -84,10 +92,12 @@ namespace Baubit.Aggregation
         {
             await foreach (var @event in _channel.EnumerateAsync(_instanceCancellationTokenSource.Token))
             {
+                @event?.CaptureTraceEvent(new OutForDispatch());
                 foreach (var dispatcher in _dispatchers)
                 {
                     var dispatchResult = await dispatcher.TryPublish(@event, _instanceCancellationTokenSource.Token);
                 }
+                @event?.CaptureTraceEvent(new Dispatched());
             }
         }
         protected virtual void Dispose(bool disposing)

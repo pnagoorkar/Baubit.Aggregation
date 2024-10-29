@@ -8,8 +8,7 @@ namespace Baubit.Aggregation.Bounded
         private TimeSpan maxWaitToWrite;
         public EventAggregator(BoundedChannelOptions boundedChannelOptions, 
                                DispatcherFactory<TEvent> dispatcherFactory, 
-                               TimeSpan maxWaitToWrite) : base(Channel.CreateBounded<TEvent>(boundedChannelOptions), 
-                                                                                   dispatcherFactory)
+                               TimeSpan maxWaitToWrite) : base(Channel.CreateBounded<TEvent>(boundedChannelOptions), dispatcherFactory)
         {
             this.maxWaitToWrite = maxWaitToWrite;
         }
