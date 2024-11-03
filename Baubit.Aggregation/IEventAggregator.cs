@@ -1,4 +1,5 @@
 ﻿using FluentResults;
+using Microsoft.Extensions.Hosting;
 
 namespace Baubit.Aggregation
 {
@@ -6,7 +7,7 @@ namespace Baubit.Aggregation
     /// Provides methods for non referential event passing
     /// </summary>
     /// <typeparam name="TEvent">Type of event</typeparam>
-    public interface IEventAggregator<TEvent> : IObservable<TEvent>, IDisposable
+    public interface IEventAggregator<TEvent> : IObservable<TEvent>, IHostedService, IDisposable
     {
         /// <summary>
         /// Tries to enqueue an event in the underlying buffer, to be dispatched to subscribed observers

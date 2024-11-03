@@ -1,4 +1,4 @@
-﻿using Baubit.Traceability;
+﻿using Baubit.Traceability.Reasons;
 
 namespace Baubit.Aggregation.ResultReasons
 {

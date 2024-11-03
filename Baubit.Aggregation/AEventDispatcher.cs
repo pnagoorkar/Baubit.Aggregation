@@ -1,21 +1,20 @@
-﻿using Baubit.Aggregation.ResultReasons;
-using FluentResults;
+﻿using FluentResults;
 using System.Threading.Channels;
-using Baubit.IO;
-using Baubit.Traceability;
-using Baubit.Aggregation.Traceability;
+using Baubit.IO.Channels;
+using Baubit.Tasks;
+using Microsoft.Extensions.Hosting;
 
 namespace Baubit.Aggregation
 {
     public delegate AEventDispatcher<TEvent> DispatcherFactory<TEvent>(IObserver<TEvent> observer, IList<AEventDispatcher<TEvent>> dispatchers);
 
-    public abstract class AEventDispatcher<TEvent> : IDisposable
+    public abstract class AEventDispatcher<TEvent> : IHostedService, IDisposable
     {
         private IObserver<TEvent> _observer;
         private Channel<TEvent> _channel;
         private IList<AEventDispatcher<TEvent>> _dispatchers;
-        protected Task _dispatcher;
-        protected CancellationTokenSource _instanceCancellationTokenSource = new CancellationTokenSource();
+        protected Task _deliveryTask;
+        protected CancellationToken _dispatchCancellationToken;
 
         protected AEventDispatcher(IObserver<TEvent> observer,
                                    IList<AEventDispatcher<TEvent>> dispatchers,
@@ -24,58 +23,40 @@ namespace Baubit.Aggregation
             _observer = observer;
             _dispatchers = dispatchers;
             _channel = channel;
-            _dispatcher = Task.Run(DispatchMessages);
         }
 
-        internal async Task<Result> TryPublish(TEvent @event, CancellationToken cancellationToken = default)
+        public Task StartAsync(CancellationToken cancellationToken)
         {
-            try
-            {
-                if (await _channel.TryWriteWhenReadyAsync(@event, cancellationToken, _instanceCancellationTokenSource.Token))
-                {
-                    return Result.Ok();
-                }
-                else if (cancellationToken.IsCancellationRequested)
-                {
-                    return Result.Fail("").WithReason(new CancelledByCaller());
-                }
-                else if (_instanceCancellationTokenSource.IsCancellationRequested)
-                {
-                    return Result.Fail("").WithReason(new DispatcherDisposed());
-                }
-                else
-                {
-                    return Result.Fail("");
-                }
-            }
-            catch (Exception exp)
-            {
-                return Result.Fail(new ExceptionalError(exp));
-            }
+            if (cancellationToken == CancellationToken.None || _deliveryTask != null) return Task.CompletedTask;
+            _dispatchCancellationToken = cancellationToken;
+            _deliveryTask = Task.Run(() => _channel.ReadAsync(OnNextEvent, _dispatchCancellationToken), _dispatchCancellationToken);
+            return Task.CompletedTask;
         }
 
-        private async Task DispatchMessages()
+        public Task StopAsync(CancellationToken cancellationToken)
         {
-            await foreach (var @event in _channel.EnumerateAsync(_instanceCancellationTokenSource.Token))
-            {
-                @event?.CaptureTraceEvent(new OutForDelivery(_observer));
-                _observer.OnNext(@event);
-                @event?.CaptureTraceEvent(new Delivered(_observer));    
-            }
+            _deliveryTask?.Wait(true);
+            _deliveryTask = null;
+            return Task.CompletedTask;
+        }
+
+        private Task OnNextEvent(TEvent @event, CancellationToken cancellationToken) => _observer.OnNext(@event, cancellationToken);
+
+        internal async Task<Result> TryDispatchAsync(TEvent @event, CancellationToken cancellationToken = default)
+        {
+            return await _channel.TryWriteWhenReadyAsync(@event, Timeout.InfiniteTimeSpan, cancellationToken);
         }
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!_instanceCancellationTokenSource.IsCancellationRequested)
+            if (disposing)
             {
-                _instanceCancellationTokenSource.Cancel();
-                if (disposing)
-                {
-                    //_dispatcher.Wait(true);
-                    _channel.FlushAndDisposeAsync();
-                    _dispatchers?.Remove(this);
-                    _dispatchers = null;
-                }
+                _deliveryTask?.Wait(true);
+                _deliveryTask = null;
+                _channel?.FlushAndDispose();
+                _channel = null;
+                _dispatchers?.Remove(this);
+                _dispatchers = null;
             }
         }
 

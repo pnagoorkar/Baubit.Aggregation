@@ -13,6 +13,7 @@ namespace Baubit.Aggregation.Test.AEventAggregator
         protected ABroker(IEventAggregator<TestEvent> aggregator, IEventPublisher eventPublisher)
         {
             Aggregator = aggregator;
+            Aggregator.StartAsync(CancellationToken.None);
             EventPublisher = eventPublisher;
             Events = new List<Setup.TestEvent>();
             Consumers = new List<Setup.EventConsumer>();

@@ -1,10 +1,10 @@
-﻿using Baubit.Aggregation.ResultReasons;
-using Baubit.Collections;
+﻿using Baubit.Collections;
 using FluentResults;
 using System.Threading.Channels;
-using Baubit.IO;
+using Baubit.IO.Channels;
+using Baubit.Tasks;
+using Baubit.Aggregation.ResultReasons;
 using Baubit.Traceability;
-using Baubit.Aggregation.Traceability;
 
 namespace Baubit.Aggregation
 {
@@ -12,7 +12,7 @@ namespace Baubit.Aggregation
     {
         private IList<AEventDispatcher<TEvent>> _dispatchers = new ConcurrentList<AEventDispatcher<TEvent>>();
         private Channel<TEvent> _channel;
-        protected CancellationTokenSource _instanceCancellationTokenSource = new CancellationTokenSource();
+        protected CancellationTokenSource aggregationCancellationTokenSource;
         protected Task _distributor;
         private readonly DispatcherFactory<TEvent> _dispatcherFactory;
 
@@ -21,15 +21,24 @@ namespace Baubit.Aggregation
         {
             _channel = channel;
             _dispatcherFactory = dispatcherFactory;
-            _distributor = Task.Run(DistributeMessages);
         }
 
-        public IDisposable Subscribe(IObserver<TEvent> observer)
+        public Task StartAsync(CancellationToken cancellationToken)
         {
-            if (_instanceCancellationTokenSource.IsCancellationRequested) return null;
-            var dispatcher = _dispatcherFactory.Invoke(observer, _dispatchers);
-            _dispatchers.Add(dispatcher);
-            return dispatcher;
+            if (_distributor != null) return Task.CompletedTask;
+            aggregationCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            Parallel.ForEach(_dispatchers, async dispatcher => await dispatcher.StartAsync(aggregationCancellationTokenSource.Token));
+            _distributor = Task.Run(() => _channel.ReadAsync(OnNextEvent, aggregationCancellationTokenSource.Token));
+            return Task.CompletedTask;
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            aggregationCancellationTokenSource.Cancel();
+            _distributor?.Wait(true);
+            Parallel.ForEach(_dispatchers, async dispatcher => await dispatcher.StopAsync(cancellationToken));
+            _distributor = null;
+            return Task.CompletedTask;
         }
 
         public async Task<Result<IDisposable>> TrySubscribeAsync(IObserver<TEvent> observer)
@@ -37,8 +46,9 @@ namespace Baubit.Aggregation
             await Task.Yield();
             try
             {
-                if (_instanceCancellationTokenSource.IsCancellationRequested) return null;
+                if (aggregationCancellationTokenSource != null && aggregationCancellationTokenSource.IsCancellationRequested) return Result.Fail("").WithReason(new AggregatorDisposed());
                 var dispatcher = _dispatcherFactory.Invoke(observer, _dispatchers);
+                await dispatcher.StartAsync(aggregationCancellationTokenSource?.Token ?? CancellationToken.None);
                 _dispatchers.Add(dispatcher);
                 return Result.Ok<IDisposable>(dispatcher);
             }
@@ -50,70 +60,28 @@ namespace Baubit.Aggregation
 
         public async virtual Task<Result> TryPublishAsync(TEvent @event, CancellationToken cancellationToken = default, TimeSpan? maxWaitToWrite = null)
         {
-            try
+            return await _channel.TryWriteWhenReadyAsync(@event, maxWaitToWrite, cancellationToken);
+        }
+
+        private async Task OnNextEvent(TEvent @event, CancellationToken cancellationToken)
+        {
+            foreach (var dispatcher in _dispatchers)
             {
-                @event?.CaptureTraceEvent(new Received());
-                CancellationTokenSource timedCancellationTokenSource = null;
-                if (maxWaitToWrite != null)
-                {
-                    timedCancellationTokenSource = new CancellationTokenSource(maxWaitToWrite.Value);
-                }
-                if (await _channel.TryWriteWhenReadyAsync(@event, cancellationToken, _instanceCancellationTokenSource.Token, timedCancellationTokenSource?.Token ?? default))
-                {
-                    return Result.Ok();
-                }
-                else if (cancellationToken.IsCancellationRequested)
-                {
-                    var cancelledByCaller = new CancelledByCaller();
-                    @event?.CaptureTraceEvent(new DispatchCancelled { Reasons = [cancelledByCaller] });
-                    return Result.Fail("").WithReason(cancelledByCaller);
-                }
-                else if (_instanceCancellationTokenSource.IsCancellationRequested)
-                {
-                    var aggregatorDisposed = new AggregatorDisposed();
-                    @event?.CaptureTraceEvent(new DispatchCancelled { Reasons = [aggregatorDisposed] });
-                    return Result.Fail("").WithReason(aggregatorDisposed);
-                }
-                else if (timedCancellationTokenSource != null && timedCancellationTokenSource.IsCancellationRequested)
-                {
-                    var writeTimedOut = new WriteTimedOut();
-                    @event?.CaptureTraceEvent(new DispatchCancelled { Reasons = [writeTimedOut] });
-                    return Result.Fail("").WithReason(writeTimedOut);
-                }
-                else
-                {
-                    return Result.Fail("");
-                }
-            }
-            catch (Exception exp)
-            {
-                return Result.Fail(new ExceptionalError(exp));
+                var dispatchResult = await dispatcher.TryDispatchAsync(@event, cancellationToken);
             }
         }
 
-        private async Task DistributeMessages()
-        {
-            await foreach (var @event in _channel.EnumerateAsync(_instanceCancellationTokenSource.Token))
-            {
-                @event?.CaptureTraceEvent(new OutForDispatch());
-                foreach (var dispatcher in _dispatchers)
-                {
-                    var dispatchResult = await dispatcher.TryPublish(@event, _instanceCancellationTokenSource.Token);
-                }
-                @event?.CaptureTraceEvent(new Dispatched());
-            }
-        }
         protected virtual void Dispose(bool disposing)
         {
-            if (!_instanceCancellationTokenSource.IsCancellationRequested)
+            aggregationCancellationTokenSource.Cancel();
+            if (disposing)
             {
-                _instanceCancellationTokenSource.Cancel();
-                if (disposing)
-                {
-                    _distributor.Wait(true);
-                    _channel.FlushAndDisposeAsync();
-                    _dispatchers.Dispose();
-                }
+                _distributor?.Wait(true);
+                _distributor = null;
+                _channel?.FlushAndDispose();
+                _channel = null;
+                _dispatchers?.Dispose();
+                _dispatchers = null;
             }
         }
 

@@ -1,4 +1,5 @@
-﻿namespace Baubit.Aggregation.Test.Setup
+﻿
+namespace Baubit.Aggregation.Test.Setup
 {
     public class EventConsumer : IObserver<TestEvent>, IDisposable
     {
@@ -37,6 +38,11 @@
         {
             subscription?.Dispose();
             subscription = null;
+        }
+
+        public async Task OnNext(TestEvent value, CancellationToken cancellationToken)
+        {
+            value.Trace.Add(new Receipt(Id, DateTime.Now));
         }
     }
 }
