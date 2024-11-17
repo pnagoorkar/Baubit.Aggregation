@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Baubit" Version="2024.46.1" />
+    <PackageReference Include="Baubit" Version="2024.46.3" />
   </ItemGroup>
 
 </Project>
