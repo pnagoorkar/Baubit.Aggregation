@@ -16,6 +16,7 @@
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <Deterministic>true</Deterministic>
     <RepositoryUrl>https://github.com/pnagoorkar/Baubit.Aggregation</RepositoryUrl>
+    <Authors>Prashant Nagoorkar</Authors>
   </PropertyGroup>
 
   <ItemGroup>
