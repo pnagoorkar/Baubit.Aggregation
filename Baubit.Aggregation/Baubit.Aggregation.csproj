@@ -10,6 +10,12 @@
     <AssemblyVersion>$(PackageVersion)</AssemblyVersion>
     <FileVersion>$(PackageVersion)</FileVersion>
     <InformationalVersion>$(PackageVersion)</InformationalVersion>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <Deterministic>true</Deterministic>
+    <RepositoryUrl>https://github.com/pnagoorkar/Baubit.Aggregation</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,7 +31,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Baubit" Version="2024.46.3" />
+    <None Include="../README.md" Pack="true" PackagePath="." />
+    <None Include="../LICENSE" Pack="true" PackagePath="." />
+    <PackageReference Include="Baubit" Version="2025.7.10" />
   </ItemGroup>
 
 </Project>
