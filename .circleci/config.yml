@@ -9,9 +9,9 @@ jobs:
             password: $DOCKER_HUB_PASSWORD
     steps:     
       - checkout
-      # Step 1: Check for config.yml changes.
+      # Step 1: Check for ignored files.
       - run:
-          name: Check for config.yml changes
+          name: Check for ignored files
           command: |            
               # Capture the list of changed files
               CHANGED_FILES=$(git diff --name-only HEAD^ HEAD)
@@ -20,8 +20,11 @@ jobs:
               if [ "$CHANGED_FILES" = ".circleci/config.yml" ]; then
                   echo "Only .circleci/config.yml was changed. Skipping build."
                   circleci-agent step halt
+              elif [ "$CHANGED_FILES" = "README.md" ]; then
+                  echo "Only README.md was changed. Skipping build."
+                  circleci-agent step halt
               else
-                  echo "Changes detected outside of .circleci/config.yml. Proceeding with build."
+                  echo "Changes detected outside of ignored files. Proceeding with build."
               fi
 
       # Step 2: Add github as a nuget package source
@@ -55,13 +58,13 @@ jobs:
       - run:
           name: Pack_and_publish
           command: |
-
+          
             SOLUTION_FOLDER="Baubit.Aggregation"
             PROJECT_NAME="Baubit.Aggregation"
             PROJECT_FILE="${SOLUTION_FOLDER}/${PROJECT_NAME}.csproj"
             
             YEAR=$(date +%Y)
-            WEEK=$(date +%V)
+            WEEK=$(date +%-V)
 
             # List all tags matching the pattern "v${YEAR}.${WEEK}.*"
             TAG_LIST=$(git tag -l "v${YEAR}.${WEEK}.*")
@@ -86,7 +89,9 @@ jobs:
             BUILD_TAG="v${CURRENT_VERSION}"
             echo "Current version tag - $BUILD_TAG"
 
-            dotnet pack ${PROJECT_FILE} --configuration Release -p:PackageVersion="${CURRENT_VERSION}" --output ./nupkgs --nowarn:9999
+            dotnet pack ${PROJECT_FILE} --configuration Release -p:PackageVersion="${CURRENT_VERSION}" --output ./nupkgs --nowarn:9999  --verbosity d
+
+            ls -R ./nupkgs
 
             dotnet nuget push ./nupkgs/${PROJECT_NAME}.${CURRENT_VERSION}.nupkg --source "github"
 
