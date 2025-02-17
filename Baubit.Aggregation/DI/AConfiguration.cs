@@ -2,5 +2,6 @@
 {
     public abstract class AConfiguration : Baubit.DI.AConfiguration
     {
+        public AggregatorConfiguration AggregatorConfiguration { get; init; }
     }
 }

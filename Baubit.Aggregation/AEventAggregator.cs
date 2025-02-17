@@ -16,11 +16,16 @@ namespace Baubit.Aggregation
         protected Task _distributor;
         private readonly DispatcherFactory<TEvent> _dispatcherFactory;
 
-        protected AEventAggregator(Channel<TEvent> channel, 
+        protected AEventAggregator(AggregatorConfiguration aggregatorConfiguration,
+                                   Channel<TEvent> channel,
                                    DispatcherFactory<TEvent> dispatcherFactory)
         {
             _channel = channel;
             _dispatcherFactory = dispatcherFactory;
+            if (aggregatorConfiguration?.Autostart == true)
+            {
+                StartAsync(CancellationToken.None);
+            }
         }
 
         public Task StartAsync(CancellationToken cancellationToken)

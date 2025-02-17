@@ -6,9 +6,10 @@ namespace Baubit.Aggregation.Bounded
     public sealed class EventAggregator<TEvent> : AEventAggregator<TEvent>
     {
         private TimeSpan maxWaitToWrite;
-        public EventAggregator(BoundedChannelOptions boundedChannelOptions, 
-                               DispatcherFactory<TEvent> dispatcherFactory, 
-                               TimeSpan maxWaitToWrite) : base(Channel.CreateBounded<TEvent>(boundedChannelOptions), dispatcherFactory)
+        public EventAggregator(AggregatorConfiguration aggregatorConfiguration,
+                               BoundedChannelOptions boundedChannelOptions,
+                               DispatcherFactory<TEvent> dispatcherFactory,
+                               TimeSpan maxWaitToWrite) : base(aggregatorConfiguration, Channel.CreateBounded<TEvent>(boundedChannelOptions), dispatcherFactory)
         {
             this.maxWaitToWrite = maxWaitToWrite;
         }

@@ -38,9 +38,9 @@ namespace Baubit.Aggregation.DI.Bounded
             return new EventDispatcher<TEvent>(observer, dispatchers, boundedChannelOptions!);
         }
 
-        protected override EventAggregator<TEvent> CreateAggregator(Channel<TEvent> channel, DispatcherFactory<TEvent> dispatcherFactory)
+        protected override EventAggregator<TEvent> CreateAggregator(AggregatorConfiguration aggregatorConfiguration, Channel<TEvent> channel, DispatcherFactory<TEvent> dispatcherFactory)
         {
-            return new EventAggregator<TEvent>(boundedChannelOptions!, dispatcherFactory, new TimeSpan(Configuration.MaxWaitToWriteMS));
+            return new EventAggregator<TEvent>(aggregatorConfiguration, boundedChannelOptions!, dispatcherFactory, new TimeSpan(Configuration.MaxWaitToWriteMS));
         }
     }
 }

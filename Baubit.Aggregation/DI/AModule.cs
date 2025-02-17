@@ -32,7 +32,8 @@ namespace Baubit.Aggregation.DI
         public override void Load(IServiceCollection services)
         {
             services.AddSingleton<DispatcherFactory<TEvent>>(CreateDispatcher);
-            services.AddSingleton<IEventAggregator<TEvent>>(serviceProvider => CreateAggregator(channel!, serviceProvider.GetRequiredService<DispatcherFactory<TEvent>>()));
+            services.AddSingleton<IEventAggregator<TEvent>>(serviceProvider => CreateAggregator(Configuration.AggregatorConfiguration, channel!, serviceProvider.GetRequiredService<DispatcherFactory<TEvent>>()));
+            services.AddSingleton<IObservable<TEvent>>(serviceProvider => serviceProvider.GetRequiredService<IEventAggregator<TEvent>>());
             services.AddSingleton<IEventPublisher, EventPublisher>();
             base.Load(services);
         }
@@ -40,6 +41,6 @@ namespace Baubit.Aggregation.DI
         protected abstract Channel<TEvent> CreateChannel();
 
         protected abstract TDispatcher CreateDispatcher(IObserver<TEvent> observer, IList<AEventDispatcher<TEvent>> dispatchers);
-        protected abstract TAggregator CreateAggregator(Channel<TEvent> channel, DispatcherFactory<TEvent> dispatcherFactory);
+        protected abstract TAggregator CreateAggregator(AggregatorConfiguration aggregatorConfiguration, Channel<TEvent> channel, DispatcherFactory<TEvent> dispatcherFactory);
     }
 }

@@ -20,9 +20,9 @@ namespace Baubit.Aggregation.DI.Unbounded
         {
         }
 
-        protected override EventAggregator<TEvent> CreateAggregator(Channel<TEvent> channel, DispatcherFactory<TEvent> dispatcherFactory)
+        protected override EventAggregator<TEvent> CreateAggregator(AggregatorConfiguration aggregatorConfiguration, Channel<TEvent> channel, DispatcherFactory<TEvent> dispatcherFactory)
         {
-            return new EventAggregator<TEvent>(channel, dispatcherFactory);
+            return new EventAggregator<TEvent>(aggregatorConfiguration, channel, dispatcherFactory);
         }
 
         protected override Channel<TEvent> CreateChannel()

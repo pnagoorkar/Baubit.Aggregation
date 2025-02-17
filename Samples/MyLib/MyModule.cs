@@ -1,0 +1,33 @@
+﻿using Baubit.Configuration;
+using Baubit.DI;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace MyLib
+{
+    public class MyModule : AModule<MyModuleConfiguration>
+    {
+        public MyModule(ConfigurationSource configurationSource) : base(configurationSource)
+        {
+        }
+
+        public MyModule(IConfiguration configuration) : base(configuration)
+        {
+        }
+
+        public MyModule(MyModuleConfiguration configuration, List<AModule> nestedModules) : base(configuration, nestedModules)
+        {
+        }
+
+        public override void Load(IServiceCollection services)
+        {
+            int consumerCount = Random.Shared.Next(5, 10);
+            for (int i = 0; i < consumerCount; i++)
+            {
+                services.AddScoped(serviceProvider => new EventConsumer(serviceProvider.GetRequiredService<Baubit.Aggregation.IObservable<Event>>()));
+            }
+            services.AddHostedService<EventGenerator>();
+            base.Load(services);
+        }
+    }
+}

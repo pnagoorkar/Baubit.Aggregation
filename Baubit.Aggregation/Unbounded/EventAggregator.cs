@@ -4,7 +4,9 @@ namespace Baubit.Aggregation.Unbounded
 {
     public sealed class EventAggregator<TEvent> : AEventAggregator<TEvent>
     {
-        public EventAggregator(Channel<TEvent> channel, DispatcherFactory<TEvent> dispatcherFactory) : base(channel, dispatcherFactory)
+        public EventAggregator(AggregatorConfiguration aggregatorConfiguration,
+                               Channel<TEvent> channel, 
+                               DispatcherFactory<TEvent> dispatcherFactory) : base(aggregatorConfiguration, channel, dispatcherFactory)
         {
         }
     }
