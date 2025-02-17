@@ -1,4 +1,6 @@
-A simple event aggregator that supports [asynchronous event buffering](https://www.google.com/search?q=asynchronous+event+buffering). Provides a [Baubit](https://github.com/pnagoorkar/Baubit) module
+A simple event aggregator that supports <a href="https://www.google.com/search?q=asynchronous+event+buffering" target="_blank" rel="noopener noreferrer">asynchronous event buffering</a>. 
+Provides a <a href="https://github.com/pnagoorkar/Baubit" target="_blank" rel="noopener noreferrer">Baubit</a> module
+
 # Get Started
 Unbounded event aggregator<br>
 myConfig.json
