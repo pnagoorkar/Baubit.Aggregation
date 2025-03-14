@@ -2,10 +2,8 @@
   "modules": [
     {
       "type": "Baubit.Aggregation.DI.Unbounded.Module`1[[Baubit.Aggregation.Test.Setup.TestEvent, Baubit.Aggregation.Test]], Baubit.Aggregation",
-      "parameters": {
-        "configurationSource": {
+      "configurationSource": {
 
-        }
       }
     }
   ]

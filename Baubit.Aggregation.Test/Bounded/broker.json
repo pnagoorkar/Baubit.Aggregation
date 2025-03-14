@@ -2,14 +2,12 @@
   "modules": [
     {
       "type": "Baubit.Aggregation.DI.Bounded.Module`1[[Baubit.Aggregation.Test.Setup.TestEvent, Baubit.Aggregation.Test]], Baubit.Aggregation",
-      "parameters": {
-        "configurationSource": {
-          "embeddedJsonResources": [
-            "Baubit.Aggregation;DI.Bounded.Configurations.Capacity.10.json",
-            "Baubit.Aggregation;DI.Bounded.Configurations.FullMode.Wait.json",
-            "Baubit.Aggregation;DI.Bounded.Configurations.MaxWaitToWriteMS.10.json"
-          ]
-        }
+      "configurationSource": {
+        "embeddedJsonResources": [
+          "Baubit.Aggregation;DI.Bounded.Configurations.Capacity.10.json",
+          "Baubit.Aggregation;DI.Bounded.Configurations.FullMode.Wait.json",
+          "Baubit.Aggregation;DI.Bounded.Configurations.MaxWaitToWriteMS.10.json"
+        ]
       }
     }
   ]

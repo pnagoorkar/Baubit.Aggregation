@@ -9,10 +9,8 @@ myConfig.json
     "modules": [
         {
             "type": "Baubit.Aggregation.DI.Unbounded.Module`1[[MyLib.TestEvent, MyLib]], Baubit.Aggregation",
-            "parameters": {
-                "configuration": {
+            "configuration": {
 
-                }
             }
         }
     ]
@@ -25,12 +23,10 @@ myConfig.json
     "modules": [
         {
             "type": "Baubit.Aggregation.DI.Bounded.Module`1[[MyLib.TestEvent, MyLib]], Baubit.Aggregation",
-            "parameters": {
-                "configuration": {
-                    "Capacity": 10,
-                    "FullMode": 0,
-                    "MaxWaitToWriteMS": 10
-                }
+            "configuration": {
+                "Capacity": 10,
+                "FullMode": 0,
+                "MaxWaitToWriteMS": 10
             }
         }
     ]

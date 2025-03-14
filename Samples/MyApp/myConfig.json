@@ -2,20 +2,16 @@
   "modules": [
     {
       "type": "Baubit.Aggregation.DI.Unbounded.Module`1[[MyLib.Event, MyLib]], Baubit.Aggregation",
-      "parameters": {
-        "configuration": {
-          "aggregatorConfiguration": {
-            "autostart":  true
-          }
+      "configuration": {
+        "aggregatorConfiguration": {
+          "autostart": true
         }
       }
     },
     {
       "type": "MyLib.MyModule, MyLib",
-      "parameters": {
-        "configuration": {
+      "configuration": {
 
-        }
       }
     }
   ]
