@@ -13,6 +13,12 @@
       "configuration": {
 
       }
+    },
+    {
+      "type": "Baubit.Logging.DI.Default.Module, Baubit",
+      "configuration": {
+        "addConsole": true
+      }
     }
   ]
 }

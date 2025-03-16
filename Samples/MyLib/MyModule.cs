@@ -2,6 +2,7 @@
 using Baubit.DI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace MyLib
 {
@@ -24,7 +25,8 @@ namespace MyLib
             int consumerCount = Random.Shared.Next(5, 10);
             for (int i = 0; i < consumerCount; i++)
             {
-                services.AddScoped(serviceProvider => new EventConsumer(serviceProvider.GetRequiredService<Baubit.Aggregation.IObservable<Event>>()));
+                services.AddScoped(serviceProvider => new EventConsumer(serviceProvider.GetRequiredService<Baubit.Aggregation.IObservable<Event>>(),
+                                                                        serviceProvider.GetRequiredService<ILogger<EventConsumer>>()));
             }
             services.AddHostedService<EventGenerator>();
             base.Load(services);

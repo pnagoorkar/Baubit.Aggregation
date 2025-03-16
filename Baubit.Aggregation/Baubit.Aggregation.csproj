@@ -34,7 +34,7 @@
   <ItemGroup>
     <None Include="../README.md" Pack="true" PackagePath="." />
     <None Include="../LICENSE" Pack="true" PackagePath="." />
-    <PackageReference Include="Baubit" Version="2025.11.2" />
+    <PackageReference Include="Baubit" Version="2025.11.5" />
   </ItemGroup>
 
 </Project>
