@@ -16,7 +16,7 @@ namespace Baubit.Aggregation.DI.Unbounded
         {
         }
 
-        public Module(Configuration moduleConfiguration, List<AModule> nestedModules) : base(moduleConfiguration, nestedModules)
+        public Module(Configuration configuration, List<AModule> nestedModules, List<IConstraint> constraints) : base(configuration, nestedModules, constraints)
         {
         }
 

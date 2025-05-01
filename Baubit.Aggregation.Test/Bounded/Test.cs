@@ -4,9 +4,9 @@ using Xunit.Abstractions;
 
 namespace Baubit.Aggregation.Test.Bounded
 {
-    public class Test : ATest<Broker>
+    public class Test : ATest<Context>
     {
-        public Test(Fixture<Broker> fixture, ITestOutputHelper testOutputHelper, IMessageSink diagnosticMessageSink = null) : base(fixture, testOutputHelper, diagnosticMessageSink)
+        public Test(Fixture<Context> fixture, ITestOutputHelper testOutputHelper, IMessageSink diagnosticMessageSink = null) : base(fixture, testOutputHelper, diagnosticMessageSink)
         {
         }
     }

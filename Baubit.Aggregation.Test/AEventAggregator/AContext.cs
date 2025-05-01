@@ -1,16 +1,16 @@
 ﻿using Baubit.Aggregation.Test.Setup;
-using Baubit.xUnit;
+using Baubit.Testing;
 
 namespace Baubit.Aggregation.Test.AEventAggregator
 {
-    public abstract class ABroker : ITestBroker
+    public abstract class AContext : IContext
     {
         public List<EventConsumer> Consumers { get; set; }
         public List<TestEvent> Events { get; set; }
         public IEventAggregator<TestEvent> Aggregator { get; set; }
         public IEventPublisher EventPublisher { get; set; }
 
-        protected ABroker(IEventAggregator<TestEvent> aggregator, IEventPublisher eventPublisher)
+        protected AContext(IEventAggregator<TestEvent> aggregator, IEventPublisher eventPublisher)
         {
             Aggregator = aggregator;
             Aggregator.StartAsync(CancellationToken.None);

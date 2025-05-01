@@ -16,7 +16,7 @@ namespace MyLib
         {
         }
 
-        public MyModule(MyModuleConfiguration configuration, List<AModule> nestedModules) : base(configuration, nestedModules)
+        public MyModule(MyModuleConfiguration configuration, List<AModule> nestedModules, List<IConstraint> constraints) : base(configuration, nestedModules, constraints)
         {
         }
 

@@ -8,6 +8,9 @@ namespace Baubit.Aggregation.DI.Bounded
 {
     public sealed class Module<TEvent> : AModule<Configuration, TEvent, EventAggregator<TEvent>, EventDispatcher<TEvent>>
     {
+
+        BoundedChannelOptions? boundedChannelOptions;
+
         public Module(ConfigurationSource configurationSource) : base(configurationSource)
         {
         }
@@ -16,11 +19,10 @@ namespace Baubit.Aggregation.DI.Bounded
         {
         }
 
-        public Module(Configuration moduleConfiguration, List<AModule> nestedModules) : base(moduleConfiguration, nestedModules)
+        public Module(Configuration configuration, List<AModule> nestedModules, List<IConstraint> constraints) : base(configuration, nestedModules, constraints)
         {
         }
 
-        BoundedChannelOptions? boundedChannelOptions;
         protected override void OnInitialized()
         {
             boundedChannelOptions = new BoundedChannelOptions(Configuration.Capacity) { FullMode = Configuration.FullMode };

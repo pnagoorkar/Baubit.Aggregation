@@ -10,6 +10,9 @@ namespace Baubit.Aggregation.DI
                                                                                                               where TAggregator : AEventAggregator<TEvent>
                                                                                                               where TDispatcher : AEventDispatcher<TEvent>
     {
+
+        private Channel<TEvent>? channel;
+
         protected AModule(ConfigurationSource configurationSource) : base(configurationSource)
         {
         }
@@ -18,11 +21,10 @@ namespace Baubit.Aggregation.DI
         {
         }
 
-        protected AModule(TConfiguration moduleConfiguration, List<AModule> nestedModules) : base(moduleConfiguration, nestedModules)
+        protected AModule(TConfiguration configuration, List<AModule> nestedModules, List<IConstraint> constraints) : base(configuration, nestedModules, constraints)
         {
         }
 
-        private Channel<TEvent>? channel;
         protected override void OnInitialized()
         {
             channel = CreateChannel();
