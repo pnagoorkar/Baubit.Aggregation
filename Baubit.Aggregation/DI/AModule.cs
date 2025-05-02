@@ -31,6 +31,11 @@ namespace Baubit.Aggregation.DI
             base.OnInitialized();
         }
 
+        protected override IEnumerable<IConstraint> GetKnownConstraints()
+        {
+            return [new SingularityConstraint<AModule<TConfiguration, TEvent, TAggregator, TDispatcher>>()];
+        }
+
         public override void Load(IServiceCollection services)
         {
             services.AddSingleton<DispatcherFactory<TEvent>>(CreateDispatcher);
