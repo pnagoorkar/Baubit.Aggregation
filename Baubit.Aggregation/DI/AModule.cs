@@ -1,5 +1,6 @@
 ﻿using Baubit.Configuration;
 using Baubit.DI;
+using Baubit.DI.Constraints;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Channels;
@@ -33,7 +34,7 @@ namespace Baubit.Aggregation.DI
 
         protected override IEnumerable<IConstraint> GetKnownConstraints()
         {
-            return [new SingularityConstraint<AModule<TConfiguration, TEvent, TAggregator, TDispatcher>>()];
+            return [new Singularity<AModule<TConfiguration, TEvent, TAggregator, TDispatcher>>()];
         }
 
         public override void Load(IServiceCollection services)
