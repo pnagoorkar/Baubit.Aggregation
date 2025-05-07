@@ -1,5 +1,6 @@
 ﻿using Baubit.Configuration;
 using Baubit.DI;
+using Baubit.DI.Constraints;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Channels;
@@ -10,6 +11,9 @@ namespace Baubit.Aggregation.DI
                                                                                                               where TAggregator : AEventAggregator<TEvent>
                                                                                                               where TDispatcher : AEventDispatcher<TEvent>
     {
+
+        private Channel<TEvent>? channel;
+
         protected AModule(ConfigurationSource configurationSource) : base(configurationSource)
         {
         }
@@ -18,15 +22,19 @@ namespace Baubit.Aggregation.DI
         {
         }
 
-        protected AModule(TConfiguration moduleConfiguration, List<AModule> nestedModules) : base(moduleConfiguration, nestedModules)
+        protected AModule(TConfiguration configuration, List<AModule> nestedModules, List<IConstraint> constraints) : base(configuration, nestedModules, constraints)
         {
         }
 
-        private Channel<TEvent>? channel;
         protected override void OnInitialized()
         {
             channel = CreateChannel();
             base.OnInitialized();
+        }
+
+        protected override IEnumerable<IConstraint> GetKnownConstraints()
+        {
+            return [new Singularity<AModule<TConfiguration, TEvent, TAggregator, TDispatcher>>()];
         }
 
         public override void Load(IServiceCollection services)
